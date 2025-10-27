@@ -1,22 +1,50 @@
-import Prism from "@/components/Prism";
+import CardNav from '@/components/CardNav'
+import logo from '@/public/globe.svg';
 
-export default function Test() {
+const App = () => {
+  const items = [
+    {
+      label: "About",
+      bgColor: "#0D0716",
+      textColor: "#fff",
+      links: [
+        { label: "Company", ariaLabel: "About Company", href: "#" },
+        { label: "Careers", ariaLabel: "About Careers", href: "#" }
+      ]
+    },
+    {
+      label: "Projects", 
+      bgColor: "#170D27",
+      textColor: "#fff",
+      links: [
+        { label: "Featured", ariaLabel: "Featured Projects", href: "#" },
+        { label: "Case Studies", ariaLabel: "Project Case Studies", href: "#" }
+      ]
+    },
+    {
+      label: "Contact",
+      bgColor: "#271E37", 
+      textColor: "#fff",
+      links: [
+        { label: "Email", ariaLabel: "Email us", href: "#" },
+        { label: "Twitter", ariaLabel: "Twitter", href: "#" },
+        { label: "LinkedIn", ariaLabel: "LinkedIn", href: "#" }
+      ]
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-      <div style={{ width: '100%', height: '600px', position: 'relative' }}>
-        <Prism
-          animationType="rotate"
-          timeScale={0.5}
-          height={3.5}
-          baseWidth={5.5}
-          scale={3.6}
-          hueShift={0}
-          colorFrequency={1}
-          noise={0}
-          glow={1}
-          bloom={1}
-        />
-      </div>
-    </div>
+    <CardNav
+      logo={logo}
+      logoAlt="Company Logo"
+      items={items}
+      baseColor="#fff"
+      menuColor="#000"
+      buttonBgColor="#111"
+      buttonTextColor="#fff"
+      ease="power3.out"
+    />
   );
-}
+};
+
+export default App;

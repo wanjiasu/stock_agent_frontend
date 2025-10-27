@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Prism from "@/components/Prism";
+import Link from "next/link";
+import Image from "next/image";
+import CardNav from "@/components/CardNav";
+import logo from "@/public/globe.svg";
 
 export default function Home() {
   const [message, setMessage] = useState<string>("");
@@ -12,27 +16,49 @@ export default function Home() {
     const fetchHello = async () => {
       try {
         setLoading(true);
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const localUrl = "/api/hello";
+        const remoteUrl = apiUrl ? `${apiUrl.replace(/\/$/, "")}/api/hello` : null;
         console.log("🔍 Debug Info:");
-        console.log("- API URL:", apiUrl);
-        console.log("- Full request URL:", `${apiUrl}/api/hello`);
+        console.log("- API URL:", apiUrl ?? "(same-origin)");
+        console.log("- First request URL:", localUrl);
+        console.log("- Fallback request URL:", remoteUrl ?? "(none)");
         console.log("- Environment:", process.env.NODE_ENV);
         
-        const response = await fetch(`${apiUrl}/api/hello`);
+        // Try local API first
+        let response = await fetch(localUrl);
         
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error(`Local API error! status: ${response.status}`);
         }
         
         const data = await response.json();
         setMessage(data.message);
-      } catch (err) {
-        console.error("🚨 Detailed Error Info:");
-        console.error("- Error type:", err instanceof Error ? err.constructor.name : typeof err);
-        console.error("- Error message:", err instanceof Error ? err.message : String(err));
-        console.error("- Full error object:", err);
+      } catch (localErr) {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const remoteUrl = apiUrl ? `${apiUrl.replace(/\/$/, "")}/api/hello` : null;
         
-        setError(err instanceof Error ? err.message : "获取数据失败");
+        if (remoteUrl) {
+          try {
+            console.log("➡️ Local API failed, attempting remote:", remoteUrl);
+            const response = await fetch(remoteUrl);
+            if (!response.ok) {
+              throw new Error(`Remote API error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            setMessage(data.message);
+            return;
+          } catch (remoteErr) {
+            console.error("🚨 Detailed Error Info:");
+            console.error("- Local API error:", localErr);
+            console.error("- Remote API error:", remoteErr);
+            setError(remoteErr instanceof Error ? remoteErr.message : "获取数据失败");
+          }
+        } else {
+          console.error("🚨 Detailed Error Info:");
+          console.error("- Local API error:", localErr);
+          setError(localErr instanceof Error ? localErr.message : "获取数据失败");
+        }
       } finally {
         setLoading(false);
       }
@@ -43,6 +69,54 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen">
+      {/* 顶部 CardNav（替换原固定导航） */}
+      <CardNav
+        logo={logo}
+        logoAlt="React Bits Logo"
+        appName="React Bits"
+        topLinks={[
+          { label: "Home", href: "/" },
+          { label: "Blog", href: "/blog" },
+          { label: "Contact", href: "/contact" }
+        ]}
+        items={[
+          {
+            label: "About",
+            bgColor: "#0D0716",
+            textColor: "#fff",
+            links: [
+              { label: "Company", ariaLabel: "About Company", href: "#" },
+              { label: "Careers", ariaLabel: "About Careers", href: "#" },
+            ],
+          },
+          {
+            label: "Projects",
+            bgColor: "#170D27",
+            textColor: "#fff",
+            links: [
+              { label: "Featured", ariaLabel: "Featured Projects", href: "#" },
+              { label: "Case Studies", ariaLabel: "Project Case Studies", href: "#" },
+            ],
+          },
+          {
+            label: "Contact",
+            bgColor: "#271E37",
+            textColor: "#fff",
+            links: [
+              { label: "Email", ariaLabel: "Email us", href: "#" },
+              { label: "Twitter", ariaLabel: "Twitter", href: "#" },
+              { label: "LinkedIn", ariaLabel: "LinkedIn", href: "#" },
+            ],
+          },
+        ]}
+        baseColor="rgba(255, 255, 255, 0.08)"
+        menuColor="#fff"
+        buttonBgColor="#111"
+        buttonTextColor="#fff"
+        ease="power3.out"
+        showHamburger={false}
+      />
+
       {/* 背景效果层：全屏 Prism */}
       <div className="absolute inset-0 h-full w-full -z-10 pointer-events-none">
         <Prism
@@ -60,7 +134,7 @@ export default function Home() {
       </div>
 
       {/* 前景内容层 */}
-      <div className="relative z-10 flex flex-col items-center justify-center p-8 min-h-screen">
+      <div className="relative z-10 flex flex-col items-center justify-center p-8 min-h-screen pt-32">
         <div className="max-w-md w-full space-y-6 text-center">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             欢迎来到首页
