@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Prism from "@/components/Prism";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,9 +9,23 @@ import CardNav from "@/components/CardNav";
 import logo from "@/public/globe.svg";
 
 export default function Home() {
+  const router = useRouter();
+
+  // Existing hello API demo state
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+
+  // New: Analysis form state
+  const [ticker, setTicker] = useState<string>("AAPL");
+  const [analysisDate, setAnalysisDate] = useState<string>("2024-08-01");
+  const [selectedAnalysts, setSelectedAnalysts] = useState<string[]>(["market", "fundamentals", "news"]);
+  const [researchDepth, setResearchDepth] = useState<number>(1);
+  const [llmProvider, setLlmProvider] = useState<string>("dashscope");
+  const [llmModel, setLlmModel] = useState<string>("qwen-plus");
+  const [marketType, setMarketType] = useState<string>("美股");
+  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<string>("");
 
   useEffect(() => {
     const fetchHello = async () => {
@@ -66,6 +81,62 @@ export default function Home() {
 
     fetchHello();
   }, []);
+
+  const toggleAnalyst = (name: string) => {
+    setSelectedAnalysts((prev) => {
+      if (prev.includes(name)) {
+        return prev.filter((x) => x !== name);
+      }
+      return [...prev, name];
+    });
+  };
+
+  const submitAnalysis = async (e: any) => {
+    e.preventDefault();
+    setSubmitError("");
+    setSubmitLoading(true);
+    try {
+      const backendBase = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
+      // If backend base is provided, match user's cURL path `/analyze`; fallback to same-origin router `/api/tradingagents/analyze`
+      const endpoint = backendBase ? `${backendBase}/analyze` : "/api/tradingagents/analyze";
+
+      const payload = {
+        ticker,
+        analysis_date: analysisDate,
+        analysts: selectedAnalysts,
+        research_depth: researchDepth,
+        llm_provider: llmProvider,
+        llm_model: llmModel,
+        market_type: marketType,
+      };
+
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        let detail = await res.text();
+        try {
+          const json = JSON.parse(detail);
+          detail = (json.detail && json.detail.message) ? json.detail.message : (json.detail || detail);
+        } catch {}
+        throw new Error(`分析请求失败: ${res.status} ${detail}`);
+      }
+
+      const data = await res.json();
+      // Persist response for report page
+      localStorage.setItem("ta_last_request", JSON.stringify(payload));
+      localStorage.setItem("ta_last_response", JSON.stringify(data));
+      router.push("/report");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "提交失败";
+      setSubmitError(msg);
+    } finally {
+      setSubmitLoading(false);
+    }
+  };
 
   return (
     <div className="relative min-h-screen">
@@ -135,11 +206,8 @@ export default function Home() {
 
       {/* 前景内容层 */}
       <div className="relative z-10 flex flex-col items-center justify-center p-8 min-h-screen pt-32">
-        <div className="max-w-md w-full space-y-6 text-center">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            欢迎来到首页
-          </h1>
-
+        <div className="max-w-2xl w-full space-y-6">
+          {/* 原 hello 接口显示块 */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
               后端API响应
@@ -163,10 +231,132 @@ export default function Home() {
                 <strong>来自FastAPI的消息:</strong> {message}
               </div>
             )}
+
+            <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              这个页面调用了FastAPI后端的 <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">/api/hello</code> 接口
+            </div>
           </div>
 
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            这个页面调用了FastAPI后端的 <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">/api/hello</code> 接口
+          {/* 新：交易分析表单 */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">交易分析</h2>
+            <form onSubmit={submitAnalysis} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Ticker</label>
+                  <input
+                    type="text"
+                    value={ticker}
+                    onChange={(e) => setTicker(e.target.value)}
+                    className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    placeholder="AAPL"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">分析日期 (YYYY-MM-DD)</label>
+                  <input
+                    type="date"
+                    value={analysisDate}
+                    onChange={(e) => setAnalysisDate(e.target.value)}
+                    className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">研究深度</label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={researchDepth}
+                    onChange={(e) => setResearchDepth(parseInt(e.target.value || "1", 10))}
+                    className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">LLM Provider</label>
+                  <select
+                    value={llmProvider}
+                    onChange={(e) => setLlmProvider(e.target.value)}
+                    className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  >
+                    <option value="dashscope">dashscope (阿里百炼)</option>
+                    <option value="deepseek">deepseek</option>
+                    <option value="openai">openai</option>
+                    <option value="ollama">ollama</option>
+                    <option value="anthropic">anthropic</option>
+                    <option value="google">google</option>
+                    <option value="custom_openai">custom_openai</option>
+                    <option value="openrouter">openrouter</option>
+                    <option value="siliconflow">siliconflow</option>
+                    <option value="qianfan">qianfan</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">LLM Model</label>
+                  <input
+                    type="text"
+                    value={llmModel}
+                    onChange={(e) => setLlmModel(e.target.value)}
+                    className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    placeholder="qwen-plus"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">市场类型</label>
+                  <select
+                    value={marketType}
+                    onChange={(e) => setMarketType(e.target.value)}
+                    className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  >
+                    <option value="美股">美股</option>
+                    <option value="中国">中国</option>
+                    <option value="港股">港股</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">分析模块</label>
+                <div className="mt-2 flex flex-wrap gap-3">
+                  {[
+                    { key: "market", label: "市场" },
+                    { key: "fundamentals", label: "基本面" },
+                    { key: "news", label: "新闻" },
+                    { key: "social", label: "社媒" },
+                  ].map((a) => (
+                    <label key={a.key} className="inline-flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={selectedAnalysts.includes(a.key)}
+                        onChange={() => toggleAnalyst(a.key)}
+                      />
+                      <span className="text-gray-700 dark:text-gray-300">{a.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {submitError && (
+                <div className="text-red-600 dark:text-red-400 p-3 bg-red-50 dark:bg-red-900/20 rounded">
+                  提交错误: {submitError}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={submitLoading}
+                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+              >
+                {submitLoading ? "提交中..." : "提交分析并查看报告"}
+              </button>
+
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                如果设置了 <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">NEXT_PUBLIC_API_URL</code>，将调用
+                <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">{`${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || ""}/analyze`}</code>；否则调用同源的
+                <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">/api/tradingagents/analyze</code>。
+              </p>
+            </form>
           </div>
         </div>
       </div>
