@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Prism from "@/components/Prism";
 
 export default function Home() {
   const [message, setMessage] = useState<string>("");
@@ -41,39 +42,58 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8">
-      <div className="max-w-md w-full space-y-6 text-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          欢迎来到首页
-        </h1>
-        
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
-            后端API响应
-          </h2>
-          
-          {loading && (
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="ml-2 text-gray-600 dark:text-gray-400">加载中...</span>
-            </div>
-          )}
-          
-          {error && (
-            <div className="text-red-600 dark:text-red-400 p-3 bg-red-50 dark:bg-red-900/20 rounded">
-              错误: {error}
-            </div>
-          )}
-          
-          {!loading && !error && message && (
-            <div className="text-green-600 dark:text-green-400 p-3 bg-green-50 dark:bg-green-900/20 rounded">
-              <strong>来自FastAPI的消息:</strong> {message}
-            </div>
-          )}
-        </div>
-        
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          这个页面调用了FastAPI后端的 <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">/api/hello</code> 接口
+    <div className="relative min-h-screen">
+      {/* 背景效果层：全屏 Prism */}
+      <div className="absolute inset-0 h-full w-full -z-10 pointer-events-none">
+        <Prism
+          animationType="rotate"
+          timeScale={0.5}
+          height={3.5}
+          baseWidth={5.5}
+          scale={3.6}
+          hueShift={0}
+          colorFrequency={1}
+          noise={0}
+          glow={1}
+          bloom={1}
+        />
+      </div>
+
+      {/* 前景内容层 */}
+      <div className="relative z-10 flex flex-col items-center justify-center p-8 min-h-screen">
+        <div className="max-w-md w-full space-y-6 text-center">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            欢迎来到首页
+          </h1>
+
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
+              后端API响应
+            </h2>
+
+            {loading && (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span className="ml-2 text-gray-600 dark:text-gray-400">加载中...</span>
+              </div>
+            )}
+
+            {error && (
+              <div className="text-red-600 dark:text-red-400 p-3 bg-red-50 dark:bg-red-900/20 rounded">
+                错误: {error}
+              </div>
+            )}
+
+            {!loading && !error && message && (
+              <div className="text-green-600 dark:text-green-400 p-3 bg-green-50 dark:bg-green-900/20 rounded">
+                <strong>来自FastAPI的消息:</strong> {message}
+              </div>
+            )}
+          </div>
+
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            这个页面调用了FastAPI后端的 <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">/api/hello</code> 接口
+          </div>
         </div>
       </div>
     </div>
