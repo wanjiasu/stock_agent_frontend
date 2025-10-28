@@ -31,6 +31,7 @@ export default function Home() {
   const [marketType, setMarketType] = useState<string>("美股");
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string>("");
+  const [waitRange, setWaitRange] = useState<string>("");
 
   // 根据市场类型动态设置 Ticker 输入模板（参考 CLI analyze）
   const tickerConfig = useMemo(() => {
@@ -158,6 +159,8 @@ export default function Home() {
     e.preventDefault();
     setSubmitError("");
     setSubmitLoading(true);
+    const range = researchDepth === 1 ? "3-5min" : researchDepth === 2 ? "7-12min" : "12-15min";
+    setWaitRange(range);
     try {
       const backendBase = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
       // If backend base is provided, match user's cURL path `/analyze`; fallback to same-origin router `/api/tradingagents/analyze`
@@ -198,6 +201,7 @@ export default function Home() {
       setSubmitError(msg);
     } finally {
       setSubmitLoading(false);
+      setWaitRange("");
     }
   };
 
@@ -418,13 +422,29 @@ export default function Home() {
                 </div>
               )}
 
-              <button
-                type="submit"
-                disabled={submitLoading}
-                className="rounded-full px-6 md:px-8 py-3 md:py-3.5 bg-white text-gray-900 shadow-sm ring-1 ring-black/5 hover:bg-white/90 disabled:opacity-60"
-              >
-                {submitLoading ? "提交中..." : "提交分析并查看报告"}
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  type="submit"
+                  disabled={submitLoading}
+                  className="rounded-full px-6 md:px-8 py-3 md:py-3.5 bg-white text-gray-900 shadow-sm ring-1 ring-black/5 hover:bg-white/90 disabled:opacity-60"
+                >
+                  {submitLoading ? "提交中..." : "提交分析并查看报告"}
+                </button>
+                {submitLoading && (
+                  <div className="flex items-center text-gray-700 dark:text-gray-300">
+                    <svg
+                      className="animate-spin h-4 w-4 mr-2 text-gray-500"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4A4 4 0 004 12z"></path>
+                    </svg>
+                    <span className="text-sm">请稍等（预计 {waitRange}）</span>
+                  </div>
+                )}
+              </div>
             </form>
           </div>
         </div>
