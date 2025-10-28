@@ -2,6 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import CardNav from "@/components/CardNav";
+import logo from "@/public/globe.svg";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface FormattedResults {
   stock_symbol: string;
@@ -91,29 +95,29 @@ export default function ReportPage() {
       if (activeKey === "risk_debate_state") {
         const v = value as any;
         return (
-          <div className="space-y-4 text-sm whitespace-pre-wrap">
+          <div className="space-y-4 text-sm">
             {v.risky_history && (
               <div>
                 <h3 className="font-semibold mb-1">🚀 激进分析师评估</h3>
-                <div>{v.risky_history}</div>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{v.risky_history}</ReactMarkdown>
               </div>
             )}
             {v.safe_history && (
               <div>
                 <h3 className="font-semibold mb-1">🛡️ 保守分析师评估</h3>
-                <div>{v.safe_history}</div>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{v.safe_history}</ReactMarkdown>
               </div>
             )}
             {v.neutral_history && (
               <div>
                 <h3 className="font-semibold mb-1">⚖️ 中性分析师评估</h3>
-                <div>{v.neutral_history}</div>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{v.neutral_history}</ReactMarkdown>
               </div>
             )}
             {v.judge_decision && (
               <div>
                 <h3 className="font-semibold mb-1">🎯 投资组合经理最终决策</h3>
-                <div>{v.judge_decision}</div>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{v.judge_decision}</ReactMarkdown>
               </div>
             )}
           </div>
@@ -123,23 +127,23 @@ export default function ReportPage() {
       if (activeKey === "investment_debate_state") {
         const v = value as any;
         return (
-          <div className="space-y-4 text-sm whitespace-pre-wrap">
+          <div className="space-y-4 text-sm">
             {v.bull_history && (
               <div>
                 <h3 className="font-semibold mb-1">📈 多头研究员分析</h3>
-                <div>{v.bull_history}</div>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{v.bull_history}</ReactMarkdown>
               </div>
             )}
             {v.bear_history && (
               <div>
                 <h3 className="font-semibold mb-1">📉 空头研究员分析</h3>
-                <div>{v.bear_history}</div>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{v.bear_history}</ReactMarkdown>
               </div>
             )}
             {v.judge_decision && (
               <div>
                 <h3 className="font-semibold mb-1">🎯 研究经理综合决策</h3>
-                <div>{v.judge_decision}</div>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{v.judge_decision}</ReactMarkdown>
               </div>
             )}
           </div>
@@ -158,101 +162,152 @@ export default function ReportPage() {
   };
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">分析报告</h1>
-          <Link href="/" className="text-blue-600 hover:underline">返回首页</Link>
-        </div>
+    <div className="relative min-h-screen bg-gray-50 dark:bg-gray-900">
+      <CardNav
+        logo={logo}
+        logoAlt="React Bits Logo"
+        appName="React Bits"
+        topLinks={[
+          { label: "Home", href: "/" },
+          { label: "Blog", href: "/blog" },
+          { label: "Contact", href: "/contact" }
+        ]}
+        items={[
+          {
+            label: "About",
+            bgColor: "#0D0716",
+            textColor: "#fff",
+            links: [
+              { label: "Company", ariaLabel: "About Company", href: "#" },
+              { label: "Careers", ariaLabel: "About Careers", href: "#" },
+            ],
+          },
+          {
+            label: "Projects",
+            bgColor: "#170D27",
+            textColor: "#fff",
+            links: [
+              { label: "Featured", ariaLabel: "Featured Projects", href: "#" },
+              { label: "Case Studies", ariaLabel: "Project Case Studies", href: "#" },
+            ],
+          },
+          {
+            label: "Contact",
+            bgColor: "#271E37",
+            textColor: "#fff",
+            links: [
+              { label: "Email", ariaLabel: "Email us", href: "#" },
+              { label: "Twitter", ariaLabel: "Twitter", href: "#" },
+              { label: "LinkedIn", ariaLabel: "LinkedIn", href: "#" },
+            ],
+          },
+        ]}
+        baseColor="rgba(255, 255, 255, 0.08)"
+        menuColor="#fff"
+        buttonBgColor="#111"
+        buttonTextColor="#fff"
+        ease="power3.out"
+        showHamburger={false}
+      />
 
-        {error && (
-          <div className="text-red-600 bg-red-50 p-3 rounded">{error}</div>
-        )}
 
-        {data && (
-          <div className="space-y-6">
-            {/* 顶部：交易团队计划卡片 */}
-            <div className="bg-white dark:bg-gray-800 rounded shadow p-6">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-2xl">💼</span>
-                <h2 className="text-xl font-semibold">交易团队计划</h2>
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">专业交易员制定的具体交易执行计划</p>
-              <div className="text-sm whitespace-pre-wrap">
-                {typeof data.state?.trader_investment_plan === "string"
-                  ? data.state.trader_investment_plan
-                  : "暂无交易团队计划"}
-              </div>
-            </div>
+      <div className="relative z-10 flex flex-col items-center justify-center p-8 min-h-screen pt-32">
+        <div className="max-w-4xl w-full space-y-6">
+          {error && (
+            <div className="text-red-600 bg-red-50 p-3 rounded">{error}</div>
+          )}
 
-            {/* 主报告头部与要点 */}
-            <div className="bg-white dark:bg-gray-800 rounded shadow p-6">
-              <h2 className="text-xl font-semibold mb-1">交易分析报告：{data.stock_symbol}</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-300">分析日期：{data.analysis_date}</p>
-              <div className="mt-4 text-sm space-y-2">
-                <div>
-                  1. 投资建议：<span className="font-medium">{data.decision?.action}</span>
-                  {data.decision?.action && (
-                    <span className="text-gray-500 ml-1">({englishAction(data.decision.action)})</span>
+          {data && (
+            <div className="space-y-6">
+              {/* 顶部：交易团队计划卡片 */}
+              <div className="bg-white dark:bg-gray-800 rounded shadow p-6 h-[320px] overflow-y-auto">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-2xl">💼</span>
+                  <h2 className="text-xl font-semibold">交易团队计划</h2>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">专业交易员制定的具体交易执行计划</p>
+                <div className="text-sm">
+                  {typeof data.state?.trader_investment_plan === "string" ? (
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {data.state.trader_investment_plan}
+                    </ReactMarkdown>
+                  ) : (
+                    "暂无交易团队计划"
                   )}
                 </div>
-                <div>
-                  2. 目标价位：<span className="font-medium">{data.decision?.target_price != null ? `¥${data.decision.target_price}` : "暂无"}</span>
-                </div>
-                <div>
-                  3. 置信度：<span className="font-medium">{data.decision?.confidence != null ? data.decision.confidence : "未知"}</span>
-                </div>
-                {data.decision?.reasoning && (
-                  <div className="pt-2 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                    {data.decision.reasoning}
+              </div>
+
+              {/* 主报告头部与要点 */}
+              <div className="bg-white dark:bg-gray-800 rounded shadow p-6">
+                <h2 className="text-xl font-semibold mb-1">交易分析报告：{data.stock_symbol}</h2>
+                <p className="text-sm text-gray-600 dark:text-gray-300">分析日期：{data.analysis_date}</p>
+                <div className="mt-4 text-sm space-y-2">
+                  <div>
+                    1. 投资建议：<span className="font-medium">{data.decision?.action}</span>
+                    {data.decision?.action && (
+                      <span className="text-gray-500 ml-1">({englishAction(data.decision.action)})</span>
+                    )}
                   </div>
-                )}
-              </div>
-            </div>
-
-            {/* 模块标签（点击切换下方模块内容） */}
-            {chips.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded shadow p-4">
-                <div className="flex flex-wrap gap-2">
-                  {chips.map((c) => {
-                    const active = c.key === activeKey;
-                    return (
-                      <button
-                        type="button"
-                        onClick={() => setActiveKey(c.key)}
-                        key={c.key}
-                        className={
-                          "inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm border transition-colors " +
-                          (active
-                            ? "bg-purple-600 text-white border-purple-600"
-                            : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600")
-                        }
-                      >
-                        <span>{c.icon}</span>
-                        <span>{c.label}</span>
-                      </button>
-                    );
-                  })}
+                  <div>
+                    2. 目标价位：<span className="font-medium">{data.decision?.target_price != null ? `¥${data.decision.target_price}` : "暂无"}</span>
+                  </div>
+                  <div>
+                    3. 置信度：<span className="font-medium">{data.decision?.confidence != null ? data.decision.confidence : "未知"}</span>
+                  </div>
+                  {data.decision?.reasoning && (
+                    <div className="pt-2 text-gray-700 dark:text-gray-300">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {data.decision.reasoning}
+                      </ReactMarkdown>
+                    </div>
+                  )}
                 </div>
               </div>
-            )}
 
-            {/* 动态模块内容区：根据激活标签展示对应模块内容 */}
-            <div className="bg-white dark:bg-gray-800 rounded shadow p-6">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-2xl">{MODULE_META[activeKey]?.icon ?? "📄"}</span>
-                <h2 className="text-xl font-semibold">{MODULE_META[activeKey]?.label ?? "报告"}</h2>
-              </div>
-              {activeKey === "risk_debate_state" && (
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">守住净值并优化风险敞口，挖掘适配的投资策略</p>
+              {/* 模块标签（点击切换下方模块内容） */}
+              {chips.length > 0 && (
+                <div className="bg-white dark:bg-gray-800 rounded shadow p-4">
+                  <div className="flex flex-wrap gap-2">
+                    {chips.map((c) => {
+                      const active = c.key === activeKey;
+                      return (
+                        <button
+                          type="button"
+                          onClick={() => setActiveKey(c.key)}
+                          key={c.key}
+                          className={
+                            "inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm border transition-colors " +
+                            (active
+                              ? "bg-purple-600 text-white border-purple-600"
+                              : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600")
+                          }
+                        >
+                          <span>{c.icon}</span>
+                          <span>{c.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               )}
-              {activeKey === "trader_investment_plan" && (
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">专业交易员制定的具体交易执行计划</p>
-              )}
-              <div className="mt-2">{renderActiveContent()}</div>
+
+              {/* 动态模块内容区：根据激活标签展示对应模块内容 */}
+              <div className="bg-white dark:bg-gray-800 rounded shadow p-6 h-[420px] overflow-y-auto">
+                 <div className="flex items-center gap-2 mb-2">
+                   <span className="text-2xl">{MODULE_META[activeKey]?.icon ?? "📄"}</span>
+                   <h2 className="text-xl font-semibold">{MODULE_META[activeKey]?.label ?? "报告"}</h2>
+                 </div>
+                 {activeKey === "risk_debate_state" && (
+                   <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">守住净值并优化风险敞口，挖掘适配的投资策略</p>
+                 )}
+                 {activeKey === "trader_investment_plan" && (
+                   <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">专业交易员制定的具体交易执行计划</p>
+                 )}
+                 <div className="mt-2">{renderActiveContent()}</div>
+               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
