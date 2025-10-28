@@ -277,7 +277,7 @@ export default function Home() {
           
 
           {/* 新：交易分析表单 */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <div className="rounded-2xl p-6 md:p-7 bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-200/70 dark:border-gray-700/60 shadow-sm">
             <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">交易分析</h2>
             <form onSubmit={submitAnalysis} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -287,7 +287,7 @@ export default function Home() {
                   <select
                     value={marketType}
                     onChange={(e) => setMarketType(e.target.value)}
-                    className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="mt-1 w-full rounded-full border border-gray-300/70 dark:border-gray-600/60 px-4 py-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500"
                   >
                     <option value="美股">美股</option>
                     <option value="A股">A股</option>
@@ -308,16 +308,14 @@ export default function Home() {
                         setTicker(v.toUpperCase());
                       }
                     }}
-                    className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="mt-1 w-full rounded-full border border-gray-300/70 dark:border-gray-600/60 px-4 py-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500"
                     placeholder={tickerConfig.placeholder}
                     pattern={tickerConfig.pattern}
                     title={tickerConfig.title}
                     inputMode={tickerConfig.inputMode}
                     required
                   />
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    示例: {tickerConfig.examples}
-                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">示例: {tickerConfig.examples}</div>
                 </div>
                 {/* 分析日期 */}
                 <div>
@@ -326,7 +324,7 @@ export default function Home() {
                     type="date"
                     value={analysisDate}
                     onChange={(e) => setAnalysisDate(e.target.value)}
-                    className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="mt-1 w-full rounded-full border border-gray-300/70 dark:border-gray-600/60 px-4 py-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500"
                     required
                   />
                 </div>
@@ -345,7 +343,7 @@ export default function Home() {
                       setResearchDepth(clamped);
                     }}
                     title="范围：1-3"
-                    className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="mt-1 w-full rounded-full border border-gray-300/70 dark:border-gray-600/60 px-4 py-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500"
                   />
                 </div>
                 {/* LLM Provider */}
@@ -354,7 +352,7 @@ export default function Home() {
                   <select
                     value={llmProvider}
                     onChange={(e) => setLlmProvider(e.target.value)}
-                    className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="mt-1 w-full rounded-full border border-gray-300/70 dark:border-gray-600/60 px-4 py-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500"
                   >
                     <option value="dashscope">dashscope (阿里百炼)</option>
                     <option value="deepseek">deepseek</option>
@@ -367,15 +365,13 @@ export default function Home() {
                   <select
                     value={llmModel}
                     onChange={(e) => setLlmModel(e.target.value)}
-                    className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="mt-1 w-full rounded-full border border-gray-300/70 dark:border-gray-600/60 px-4 py-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500"
                   >
                     {modelOptions.map((opt) => (
                       <option key={opt} value={opt}>{opt}</option>
                     ))}
                   </select>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    provider 切换时，模型列表将自动更新。
-                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">provider 切换时，模型列表将自动更新。</div>
                 </div>
               </div>
 
@@ -388,7 +384,7 @@ export default function Home() {
                     { key: "news", label: "新闻" },
                     { key: "social", label: "社媒" },
                   ].map((a) => (
-                    <label key={a.key} className="inline-flex items-center space-x-2">
+                    <label key={a.key} className="inline-flex items-center gap-2 rounded-full border border-gray-300/60 dark:border-gray-600/60 px-3 py-1 text-sm text-gray-700 dark:text-gray-300">
                       <input
                         type="checkbox"
                         checked={selectedAnalysts.includes(a.key)}
@@ -401,7 +397,7 @@ export default function Home() {
               </div>
 
               {submitError && (
-                <div className="text-red-600 dark:text-red-400 p-3 bg-red-50 dark:bg-red-900/20 rounded">
+                <div className="text-red-700 dark:text-red-400 p-3 rounded-lg border border-red-300/60 dark:border-red-700/60 bg-red-50/60 dark:bg-red-900/20">
                   提交错误: {submitError}
                 </div>
               )}
@@ -409,12 +405,10 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={submitLoading}
-                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                className="rounded-full px-6 md:px-8 py-3 md:py-3.5 bg-white text-gray-900 shadow-sm ring-1 ring-black/5 hover:bg-white/90 disabled:opacity-60"
               >
                 {submitLoading ? "提交中..." : "提交分析并查看报告"}
               </button>
-
-              
             </form>
           </div>
         </div>

@@ -206,7 +206,16 @@ export default function ReportPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div
+      className="relative min-h-screen bg-gray-50 dark:bg-gray-900"
+      style={{
+        backgroundImage:
+          "linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.14)), url('/background.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
       <CardNav
         logo={logo}
         logoAlt="React Bits Logo"
@@ -264,7 +273,7 @@ export default function ReportPage() {
           {data && (
             <div className="space-y-6">
               {/* 顶部：交易团队计划卡片 */}
-              <div className="bg-white dark:bg-gray-800 rounded shadow p-6 h-[320px] overflow-y-auto">
+              <div className="rounded-2xl p-6 md:p-7 bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-200/70 dark:border-gray-700/60 shadow-sm h-[320px] overflow-y-auto">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-2xl">💼</span>
                   <h2 className="text-xl font-semibold">交易团队计划</h2>
@@ -284,7 +293,7 @@ export default function ReportPage() {
               </div>
 
               {/* 主报告头部与要点 */}
-              <div className="bg-white dark:bg-gray-800 rounded shadow p-6">
+              <div className="rounded-2xl p-6 md:p-7 bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-200/70 dark:border-gray-700/60 shadow-sm">
                 <h2 className="text-xl font-semibold mb-1">交易分析报告：{data.stock_symbol}</h2>
                 <p className="text-sm text-gray-600 dark:text-gray-300">分析日期：{data.analysis_date}</p>
                 <div className="mt-4 text-sm space-y-2">
@@ -314,7 +323,7 @@ export default function ReportPage() {
 
               {/* 模块标签（点击切换下方模块内容） */}
               {chips.length > 0 && (
-                <div className="bg-white dark:bg-gray-800 rounded shadow p-4">
+                <div className="rounded-2xl px-4 py-3 md:px-5 md:py-4 bg-white/70 dark:bg-gray-800/60 backdrop-blur-sm border border-gray-200/70 dark:border-gray-700/60 shadow-sm">
                   <div className="flex flex-wrap gap-2">
                     {chips.map((c) => {
                       const active = c.key === activeKey;
@@ -340,7 +349,7 @@ export default function ReportPage() {
               )}
 
               {/* 动态模块内容区：根据激活标签展示对应模块内容 */}
-              <div className="bg-white dark:bg-gray-800 rounded shadow p-6 h-[420px] overflow-y-auto">
+              <div className="rounded-2xl p-6 md:p-7 bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-200/70 dark:border-gray-700/60 shadow-sm h-[420px] overflow-y-auto">
                  <div className="flex items-center gap-2 mb-2">
                    <span className="text-2xl">{MODULE_META[activeKey]?.icon ?? "📄"}</span>
                    <h2 className="text-xl font-semibold">{MODULE_META[activeKey]?.label ?? "报告"}</h2>
