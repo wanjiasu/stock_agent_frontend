@@ -223,7 +223,7 @@ export default function ReportPage() {
         topLinks={[
           { label: "Home", href: "/" },
           { label: "Blog", href: "/blog" },
-          { label: "Contact", href: "/contact" }
+          { label: "Contact", href: "#contact" }
         ]}
         items={[
           {

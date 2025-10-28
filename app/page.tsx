@@ -26,7 +26,7 @@ export default function Home() {
   const [selectedAnalysts, setSelectedAnalysts] = useState<string[]>(["market", "fundamentals", "news"]);
   const [researchDepth, setResearchDepth] = useState<number>(1);
   const [llmProvider, setLlmProvider] = useState<string>("dashscope");
-  const [llmModel, setLlmModel] = useState<string>("qwen-plus-latest");
+  const [llmModel, setLlmModel] = useState<string>("qwen-turbor");
   const [marketType, setMarketType] = useState<string>("美股");
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string>("");
@@ -65,7 +65,7 @@ export default function Home() {
   const modelOptions = useMemo(() => {
     switch (llmProvider) {
       case "dashscope":
-        return ["qwen-turbo", "qwen-plus-latest", "qwen-max"];
+        return ["qwen-turbor", "qwen-plus-latest", "qwen-max"];
       case "deepseek":
         return ["deepseek-chat"];
       case "openai":
@@ -75,14 +75,18 @@ export default function Home() {
     }
   }, [llmProvider]);
 
-  // provider变化或当前模型不在选项中时，自动纠正模型
+  // provider 变化时，根据映射重置为该 provider 的默认模型（若默认不存在则取第一个）
   useEffect(() => {
     if (!modelOptions.length) return;
-    if (!modelOptions.includes(llmModel)) {
-      // 首选 qwen-plus-latest，如不存在则取第一个
-      const preferred = modelOptions.includes("qwen-plus-latest") ? "qwen-plus-latest" : modelOptions[0];
-      setLlmModel(preferred);
+    const providerDefaults: Record<string, string> = {
+      dashscope: "qwen-turbor",
+      openai: "gpt-4o-mini",
+    };
+    let preferred = providerDefaults[llmProvider];
+    if (!preferred || !modelOptions.includes(preferred)) {
+      preferred = modelOptions[0];
     }
+    setLlmModel(preferred);
   }, [llmProvider, modelOptions]);
 
   useEffect(() => {
@@ -206,7 +210,7 @@ export default function Home() {
         topLinks={[
           { label: "Home", href: "/" },
           { label: "Blog", href: "/blog" },
-          { label: "Contact", href: "/contact" }
+          { label: "Contact", href: "#contact" }
         ]}
         items={[
           {
@@ -351,7 +355,12 @@ export default function Home() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">LLM Provider</label>
                   <select
                     value={llmProvider}
-                    onChange={(e) => setLlmProvider(e.target.value)}
+                    onChange={(e) => {
+                      const next = e.target.value;
+                      setLlmProvider(next);
+                      if (next === "dashscope") setLlmModel("qwen-turbor");
+                      else if (next === "openai") setLlmModel("gpt-4o-mini");
+                    }}
                     className="mt-1 w-full rounded-full border border-gray-300/70 dark:border-gray-600/60 px-4 py-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500"
                   >
                     <option value="dashscope">dashscope (阿里百炼)</option>
@@ -382,7 +391,7 @@ export default function Home() {
                     { key: "market", label: "市场" },
                     { key: "fundamentals", label: "基本面" },
                     { key: "news", label: "新闻" },
-                    { key: "social", label: "社媒" },
+                    //{ key: "social", label: "社媒" },
                   ].map((a) => (
                     <label key={a.key} className="inline-flex items-center gap-2 rounded-full border border-gray-300/60 dark:border-gray-600/60 px-3 py-1 text-sm text-gray-700 dark:text-gray-300">
                       <input
