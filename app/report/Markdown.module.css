@@ -1,0 +1,118 @@
+/* 专用 Markdown 样式容器，保证排版规整、层次清晰、在深浅色主题下均可用 */
+
+.markdownBody {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* 标题层级与间距 */
+.markdownBody h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0.75rem 0 0.5rem;
+}
+.markdownBody h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0.7rem 0 0.45rem;
+}
+.markdownBody h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0.6rem 0 0.4rem;
+}
+.markdownBody h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0.5rem 0 0.35rem;
+}
+
+/* 段落与列表 */
+.markdownBody p {
+  margin: 0.5rem 0;
+}
+.markdownBody ul,
+.markdownBody ol {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+}
+.markdownBody li {
+  margin: 0.25rem 0;
+}
+
+/* 链接、强调 */
+.markdownBody a {
+  color: #2563eb; /* 蓝色，浅色主题 */
+  text-decoration: underline;
+}
+:global(.dark) .markdownBody a {
+  color: #93c5fd; /* 蓝色，深色主题 */
+}
+.markdownBody strong { font-weight: 600; }
+.markdownBody em { font-style: italic; }
+
+/* 行内与代码块 */
+.markdownBody code {
+  background: rgba(0,0,0,0.06);
+  border-radius: 4px;
+  padding: 0.15rem 0.35rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+:global(.dark) .markdownBody code {
+  background: rgba(255,255,255,0.08);
+}
+.markdownBody pre {
+  background: rgba(0,0,0,0.06);
+  border-radius: 6px;
+  padding: 0.75rem;
+  overflow: auto;
+  margin: 0.75rem 0;
+}
+:global(.dark) .markdownBody pre {
+  background: rgba(255,255,255,0.08);
+}
+
+/* 引用与分隔线 */
+.markdownBody blockquote {
+  margin: 0.5rem 0;
+  padding-left: 0.75rem;
+  border-left: 3px solid rgba(0,0,0,0.2);
+  color: rgba(0,0,0,0.7);
+}
+:global(.dark) .markdownBody blockquote {
+  border-left-color: rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.85);
+}
+.markdownBody hr {
+  border: 0;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  margin: 1rem 0;
+}
+:global(.dark) .markdownBody hr {
+  border-top-color: rgba(255,255,255,0.15);
+}
+
+/* 表格（支持横向滚动，防止溢出） */
+.markdownBody table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.75rem 0;
+  display: block;
+  overflow-x: auto;
+}
+.markdownBody th,
+.markdownBody td {
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 0.5rem 0.6rem;
+  text-align: left;
+}
+:global(.dark) .markdownBody th,
+:global(.dark) .markdownBody td {
+  border-color: rgba(255,255,255,0.15);
+}
+
+/* 首尾去多余间距 */
+.markdownBody > :first-child { margin-top: 0; }
+.markdownBody > :last-child { margin-bottom: 0; }

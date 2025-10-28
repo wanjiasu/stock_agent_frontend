@@ -6,6 +6,7 @@ import CardNav from "@/components/CardNav";
 import logo from "@/public/globe.svg";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import styles from "./Markdown.module.css";
 
 interface FormattedResults {
   stock_symbol: string;
@@ -70,6 +71,15 @@ export default function ReportPage() {
     return map[action] || action;
   };
 
+  // 将文本中的 HTML 换行等替换为 Markdown 友好的换行
+  const toMd = (str: string) => {
+    return String(str)
+      .replace(/\r\n/g, "\n")
+      .replace(/<br\s*\/?>(\n)?/gi, "\n")
+      .replace(/&nbsp;/gi, " ")
+      .trim();
+  };
+
   // 当前激活的模块（默认优先风险管理团队，否则第一个有数据的模块）
   const [activeKey, setActiveKey] = useState<string>("risk_debate_state");
 
@@ -88,7 +98,13 @@ export default function ReportPage() {
     if (!value) return <div className="text-sm text-gray-500">暂无该模块内容</div>;
 
     if (typeof value === "string") {
-      return <div className="text-sm whitespace-pre-wrap">{value}</div>;
+      return (
+        <div className={styles.markdownBody}>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {toMd(value)}
+          </ReactMarkdown>
+        </div>
+      );
     }
 
     if (typeof value === "object") {
@@ -99,25 +115,41 @@ export default function ReportPage() {
             {v.risky_history && (
               <div>
                 <h3 className="font-semibold mb-1">🚀 激进分析师评估</h3>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{v.risky_history}</ReactMarkdown>
+                <div className={styles.markdownBody}>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {toMd(v.risky_history)}
+                  </ReactMarkdown>
+                </div>
               </div>
             )}
             {v.safe_history && (
               <div>
                 <h3 className="font-semibold mb-1">🛡️ 保守分析师评估</h3>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{v.safe_history}</ReactMarkdown>
+                <div className={styles.markdownBody}>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {toMd(v.safe_history)}
+                  </ReactMarkdown>
+                </div>
               </div>
             )}
             {v.neutral_history && (
               <div>
                 <h3 className="font-semibold mb-1">⚖️ 中性分析师评估</h3>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{v.neutral_history}</ReactMarkdown>
+                <div className={styles.markdownBody}>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {toMd(v.neutral_history)}
+                  </ReactMarkdown>
+                </div>
               </div>
             )}
             {v.judge_decision && (
               <div>
                 <h3 className="font-semibold mb-1">🎯 投资组合经理最终决策</h3>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{v.judge_decision}</ReactMarkdown>
+                <div className={styles.markdownBody}>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {toMd(v.judge_decision)}
+                  </ReactMarkdown>
+                </div>
               </div>
             )}
           </div>
@@ -131,19 +163,31 @@ export default function ReportPage() {
             {v.bull_history && (
               <div>
                 <h3 className="font-semibold mb-1">📈 多头研究员分析</h3>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{v.bull_history}</ReactMarkdown>
+                <div className={styles.markdownBody}>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {toMd(v.bull_history)}
+                  </ReactMarkdown>
+                </div>
               </div>
             )}
             {v.bear_history && (
               <div>
                 <h3 className="font-semibold mb-1">📉 空头研究员分析</h3>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{v.bear_history}</ReactMarkdown>
+                <div className={styles.markdownBody}>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {toMd(v.bear_history)}
+                  </ReactMarkdown>
+                </div>
               </div>
             )}
             {v.judge_decision && (
               <div>
                 <h3 className="font-semibold mb-1">🎯 研究经理综合决策</h3>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{v.judge_decision}</ReactMarkdown>
+                <div className={styles.markdownBody}>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {toMd(v.judge_decision)}
+                  </ReactMarkdown>
+                </div>
               </div>
             )}
           </div>
@@ -228,9 +272,11 @@ export default function ReportPage() {
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">专业交易员制定的具体交易执行计划</p>
                 <div className="text-sm">
                   {typeof data.state?.trader_investment_plan === "string" ? (
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {data.state.trader_investment_plan}
-                    </ReactMarkdown>
+                    <div className={styles.markdownBody}>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {toMd(data.state.trader_investment_plan)}
+                      </ReactMarkdown>
+                    </div>
                   ) : (
                     "暂无交易团队计划"
                   )}
@@ -256,9 +302,11 @@ export default function ReportPage() {
                   </div>
                   {data.decision?.reasoning && (
                     <div className="pt-2 text-gray-700 dark:text-gray-300">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {data.decision.reasoning}
-                      </ReactMarkdown>
+                      <div className={styles.markdownBody}>
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {toMd(data.decision.reasoning)}
+                        </ReactMarkdown>
+                      </div>
                     </div>
                   )}
                 </div>
