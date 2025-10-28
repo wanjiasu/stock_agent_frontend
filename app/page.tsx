@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Prism from "@/components/Prism";
 import Link from "next/link";
@@ -103,7 +104,7 @@ export default function Home() {
         console.log("- Environment:", process.env.NODE_ENV);
         
         // Try local API first
-        let response = await fetch(localUrl);
+        const response = await fetch(localUrl);
         
         if (!response.ok) {
           throw new Error(`Local API error! status: ${response.status}`);
@@ -153,7 +154,7 @@ export default function Home() {
     });
   };
 
-  const submitAnalysis = async (e: any) => {
+  const submitAnalysis = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitError("");
     setSubmitLoading(true);

@@ -3,6 +3,7 @@ import CardNav from "@/components/CardNav";
 import logo from "@/public/globe.svg";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
+import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
 export const revalidate = 60;
 
@@ -11,7 +12,7 @@ type PostListItem = {
   title: string;
   slug: { current: string };
   publishedAt?: string;
-  mainImage?: any;
+  mainImage?: SanityImageSource;
   author?: { name?: string } | null;
   categories?: { title: string }[];
 };

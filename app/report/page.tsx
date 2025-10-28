@@ -1,12 +1,47 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import CardNav from "@/components/CardNav";
 import logo from "@/public/globe.svg";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import styles from "./Markdown.module.css";
+
+// ---------------- Typed result structures ----------------
+type Decision = {
+  action?: string;
+  target_price?: number;
+  confidence?: number;
+  reasoning?: string;
+  [key: string]: unknown;
+};
+
+type RiskDebateState = {
+  risky_history?: string;
+  safe_history?: string;
+  neutral_history?: string;
+  judge_decision?: string;
+};
+
+type InvestmentDebateState = {
+  bull_history?: string;
+  bear_history?: string;
+  judge_decision?: string;
+};
+
+type ReportState = {
+  market_report?: string;
+  fundamentals_report?: string;
+  sentiment_report?: string;
+  news_report?: string;
+  risk_assessment?: string;
+  investment_plan?: string;
+  investment_debate_state?: InvestmentDebateState | string;
+  trader_investment_plan?: string;
+  risk_debate_state?: RiskDebateState | string;
+  final_trade_decision?: string;
+  [key: string]: unknown;
+};
 
 interface FormattedResults {
   stock_symbol: string;
@@ -15,9 +50,9 @@ interface FormattedResults {
   research_depth: number;
   llm_provider: string;
   llm_model: string;
-  decision: Record<string, any>;
-  state: Record<string, any>;
-  metadata?: Record<string, any>;
+  decision: Decision;
+  state: ReportState;
+  metadata?: Record<string, unknown>;
 }
 
 const MODULE_META: Record<string, { label: string; icon: string }> = {
@@ -94,7 +129,114 @@ export default function ReportPage() {
 
   const renderActiveContent = () => {
     if (!data) return null;
-    const value = data.state?.[activeKey];
+
+    if (activeKey === "risk_debate_state") {
+      const v = data.state?.risk_debate_state;
+      if (!v) return <div className="text-sm text-gray-500">暂无该模块内容</div>;
+      if (typeof v === "string") {
+        return (
+          <div className={styles.markdownBody}>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {toMd(v)}
+            </ReactMarkdown>
+          </div>
+        );
+      }
+      return (
+        <div className="space-y-4 text-sm">
+          {v.risky_history && (
+            <div>
+              <h3 className="font-semibold mb-1">🚀 激进分析师评估</h3>
+              <div className={styles.markdownBody}>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {toMd(v.risky_history)}
+                </ReactMarkdown>
+              </div>
+            </div>
+          )}
+          {v.safe_history && (
+            <div>
+              <h3 className="font-semibold mb-1">🛡️ 保守分析师评估</h3>
+              <div className={styles.markdownBody}>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {toMd(v.safe_history)}
+                </ReactMarkdown>
+              </div>
+            </div>
+          )}
+          {v.neutral_history && (
+            <div>
+              <h3 className="font-semibold mb-1">⚖️ 中性分析师评估</h3>
+              <div className={styles.markdownBody}>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {toMd(v.neutral_history)}
+                </ReactMarkdown>
+              </div>
+            </div>
+          )}
+          {v.judge_decision && (
+            <div>
+              <h3 className="font-semibold mb-1">🎯 投资组合经理最终决策</h3>
+              <div className={styles.markdownBody}>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {toMd(v.judge_decision)}
+                </ReactMarkdown>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    if (activeKey === "investment_debate_state") {
+      const v = data.state?.investment_debate_state;
+      if (!v) return <div className="text-sm text-gray-500">暂无该模块内容</div>;
+      if (typeof v === "string") {
+        return (
+          <div className={styles.markdownBody}>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {toMd(v)}
+            </ReactMarkdown>
+          </div>
+        );
+      }
+      return (
+        <div className="space-y-4 text-sm">
+          {v.bull_history && (
+            <div>
+              <h3 className="font-semibold mb-1">📈 多头研究员分析</h3>
+              <div className={styles.markdownBody}>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {toMd(v.bull_history)}
+                </ReactMarkdown>
+              </div>
+            </div>
+          )}
+          {v.bear_history && (
+            <div>
+              <h3 className="font-semibold mb-1">📉 空头研究员分析</h3>
+              <div className={styles.markdownBody}>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {toMd(v.bear_history)}
+                </ReactMarkdown>
+              </div>
+            </div>
+          )}
+          {v.judge_decision && (
+            <div>
+              <h3 className="font-semibold mb-1">🎯 研究经理综合决策</h3>
+              <div className={styles.markdownBody}>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {toMd(v.judge_decision)}
+                </ReactMarkdown>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const value = data.state?.[activeKey] as unknown;
     if (!value) return <div className="text-sm text-gray-500">暂无该模块内容</div>;
 
     if (typeof value === "string") {
@@ -107,102 +249,11 @@ export default function ReportPage() {
       );
     }
 
-    if (typeof value === "object") {
-      if (activeKey === "risk_debate_state") {
-        const v = value as any;
-        return (
-          <div className="space-y-4 text-sm">
-            {v.risky_history && (
-              <div>
-                <h3 className="font-semibold mb-1">🚀 激进分析师评估</h3>
-                <div className={styles.markdownBody}>
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {toMd(v.risky_history)}
-                  </ReactMarkdown>
-                </div>
-              </div>
-            )}
-            {v.safe_history && (
-              <div>
-                <h3 className="font-semibold mb-1">🛡️ 保守分析师评估</h3>
-                <div className={styles.markdownBody}>
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {toMd(v.safe_history)}
-                  </ReactMarkdown>
-                </div>
-              </div>
-            )}
-            {v.neutral_history && (
-              <div>
-                <h3 className="font-semibold mb-1">⚖️ 中性分析师评估</h3>
-                <div className={styles.markdownBody}>
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {toMd(v.neutral_history)}
-                  </ReactMarkdown>
-                </div>
-              </div>
-            )}
-            {v.judge_decision && (
-              <div>
-                <h3 className="font-semibold mb-1">🎯 投资组合经理最终决策</h3>
-                <div className={styles.markdownBody}>
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {toMd(v.judge_decision)}
-                  </ReactMarkdown>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      }
-
-      if (activeKey === "investment_debate_state") {
-        const v = value as any;
-        return (
-          <div className="space-y-4 text-sm">
-            {v.bull_history && (
-              <div>
-                <h3 className="font-semibold mb-1">📈 多头研究员分析</h3>
-                <div className={styles.markdownBody}>
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {toMd(v.bull_history)}
-                  </ReactMarkdown>
-                </div>
-              </div>
-            )}
-            {v.bear_history && (
-              <div>
-                <h3 className="font-semibold mb-1">📉 空头研究员分析</h3>
-                <div className={styles.markdownBody}>
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {toMd(v.bear_history)}
-                  </ReactMarkdown>
-                </div>
-              </div>
-            )}
-            {v.judge_decision && (
-              <div>
-                <h3 className="font-semibold mb-1">🎯 研究经理综合决策</h3>
-                <div className={styles.markdownBody}>
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {toMd(v.judge_decision)}
-                  </ReactMarkdown>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      }
-
-      // 其他对象内容：以JSON查看（保持不展示中间过程的前提下，仅作为详细数据查看）
-      return (
-        <pre className="mt-2 text-sm bg-gray-50 dark:bg-gray-900 p-3 rounded overflow-auto">
-          {JSON.stringify(value, null, 2)}
-        </pre>
-      );
-    }
-
-    return <div className="text-sm">{String(value)}</div>;
+    return (
+      <pre className="mt-2 text-sm bg-gray-50 dark:bg-gray-900 p-3 rounded overflow-auto">
+        {JSON.stringify(value, null, 2)}
+      </pre>
+    );
   };
 
   return (

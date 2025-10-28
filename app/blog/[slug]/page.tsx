@@ -4,21 +4,28 @@ import CardNav from "@/components/CardNav";
 import logo from "@/public/globe.svg";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
+import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
 export const revalidate = 60;
+
+type PortableTextChild = { text?: string };
+type PortableTextBlock = { children?: PortableTextChild[] };
 
 type PostDetail = {
   _id: string;
   title: string;
   slug: { current: string };
   publishedAt?: string;
-  mainImage?: any;
+  mainImage?: SanityImageSource;
   author?: { name?: string } | null;
   categories?: { title: string }[];
-  body?: any[];
+  body?: PortableTextBlock[];
 };
 
-export default async function BlogDetailPage({ params }: { params: { slug: string } }) {
+export default async function BlogDetailPage(
+  props: { params: Promise<{ slug: string }> }
+) {
+  const params = await props.params;
   const data = await client.fetch<PostDetail>(
     `*[_type == "post" && slug.current == $slug][0]{
       _id,
@@ -39,7 +46,7 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
   const imgUrl = data.mainImage ? urlFor(data.mainImage).width(1200).height(600).fit("crop").url() : undefined;
   const bodyText = Array.isArray(data.body)
     ? data.body
-        .map((b: any) => (Array.isArray(b?.children) ? b.children.map((c: any) => c.text).join("") : ""))
+        .map((b: PortableTextBlock) => (Array.isArray(b?.children) ? b.children.map((c: PortableTextChild) => c.text ?? "").join("") : ""))
         .join("\n\n")
     : "";
 
