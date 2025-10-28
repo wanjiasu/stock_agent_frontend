@@ -290,7 +290,13 @@ export default function Home() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">市场类型</label>
                   <select
                     value={marketType}
-                    onChange={(e) => setMarketType(e.target.value)}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setMarketType(v);
+                      if (v === "美股") setTicker("AAPL");
+                      else if (v === "港股") setTicker("0700.HK");
+                      else if (v === "A股") setTicker("000001");
+                    }}
                     className="mt-1 w-full rounded-full border border-gray-300/70 dark:border-gray-600/60 px-4 py-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500"
                   >
                     <option value="美股">美股</option>
