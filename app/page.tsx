@@ -201,8 +201,8 @@ export default function Home() {
       {/* 顶部 CardNav（替换原固定导航） */}
       <CardNav
         logo={logo}
-        logoAlt="React Bits Logo"
-        appName="React Bits"
+        logoAlt="TradingAgents"
+        appName="TradingAgents"
         topLinks={[
           { label: "Home", href: "/" },
           { label: "Blog", href: "/blog" },
@@ -265,35 +265,16 @@ export default function Home() {
       {/* 前景内容层 */}
       <div className="relative z-10 flex flex-col items-center justify-center p-8 min-h-screen pt-32">
         <div className="max-w-2xl w-full space-y-6">
-          {/* 原 hello 接口显示块 */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
-              后端API响应
-            </h2>
-
-            {loading && (
-              <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <span className="ml-2 text-gray-600 dark:text-gray-400">加载中...</span>
-              </div>
-            )}
-
-            {error && (
-              <div className="text-red-600 dark:text-red-400 p-3 bg-red-50 dark:bg-red-900/20 rounded">
-                错误: {error}
-              </div>
-            )}
-
-            {!loading && !error && message && (
-              <div className="text-green-600 dark:text-green-400 p-3 bg-green-50 dark:bg-green-900/20 rounded">
-                <strong>来自FastAPI的消息:</strong> {message}
-              </div>
-            )}
-
-            <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              这个页面调用了FastAPI后端的 <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">/api/hello</code> 接口
-            </div>
+          {/* slogan和描述展示区块 */}
+          <div className="text-center py-8">
+            <h1 className="mt-6 text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+              多团队协作，一次生成可执行交易方案
+            </h1>
+            <p className="mt-3 text-sm md:text-base text-gray-600 dark:text-gray-300">
+              集成研究、风险与交易计划，统一 Markdown 报告，随时复盘
+            </p>
           </div>
+          
 
           {/* 新：交易分析表单 */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
@@ -433,11 +414,7 @@ export default function Home() {
                 {submitLoading ? "提交中..." : "提交分析并查看报告"}
               </button>
 
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                如果设置了 <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">NEXT_PUBLIC_API_URL</code>，将调用
-                <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">{`${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || ""}/analyze`}</code>；否则调用同源的
-                <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">/api/tradingagents/analyze</code>。
-              </p>
+              
             </form>
           </div>
         </div>
