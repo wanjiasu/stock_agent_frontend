@@ -242,6 +242,20 @@ export default function Home() {
             <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">交易分析</h2>
             <form onSubmit={submitAnalysis} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* 市场类型 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">市场类型</label>
+                  <select
+                    value={marketType}
+                    onChange={(e) => setMarketType(e.target.value)}
+                    className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  >
+                    <option value="美股">美股</option>
+                    <option value="中国">中国</option>
+                    <option value="港股">港股</option>
+                  </select>
+                </div>
+                {/* Ticker */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Ticker</label>
                   <input
@@ -253,6 +267,7 @@ export default function Home() {
                     required
                   />
                 </div>
+                {/* 分析日期 */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">分析日期 (YYYY-MM-DD)</label>
                   <input
@@ -263,6 +278,7 @@ export default function Home() {
                     required
                   />
                 </div>
+                {/* 研究深度 */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">研究深度</label>
                   <input
@@ -273,6 +289,7 @@ export default function Home() {
                     className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
                 </div>
+                {/* LLM Provider */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">LLM Provider</label>
                   <select
@@ -292,6 +309,7 @@ export default function Home() {
                     <option value="qianfan">qianfan</option>
                   </select>
                 </div>
+                {/* LLM Model */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">LLM Model</label>
                   <input
@@ -301,18 +319,6 @@ export default function Home() {
                     className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     placeholder="qwen-plus"
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">市场类型</label>
-                  <select
-                    value={marketType}
-                    onChange={(e) => setMarketType(e.target.value)}
-                    className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  >
-                    <option value="美股">美股</option>
-                    <option value="中国">中国</option>
-                    <option value="港股">港股</option>
-                  </select>
                 </div>
               </div>
 
