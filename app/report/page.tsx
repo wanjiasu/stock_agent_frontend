@@ -218,8 +218,8 @@ export default function ReportPage() {
     >
       <CardNav
         logo={logo}
-        logoAlt="React Bits Logo"
-        appName="React Bits"
+        logoAlt="TradingAgents"
+        appName="TradingAgents"
         topLinks={[
           { label: "Home", href: "/" },
           { label: "Blog", href: "/blog" },
