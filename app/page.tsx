@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Prism from "@/components/Prism";
 import Link from "next/link";
@@ -18,14 +18,72 @@ export default function Home() {
 
   // New: Analysis form state
   const [ticker, setTicker] = useState<string>("AAPL");
-  const [analysisDate, setAnalysisDate] = useState<string>("2024-08-01");
+  const [analysisDate, setAnalysisDate] = useState<string>(() => {
+    const d = new Date();
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  });
   const [selectedAnalysts, setSelectedAnalysts] = useState<string[]>(["market", "fundamentals", "news"]);
   const [researchDepth, setResearchDepth] = useState<number>(1);
   const [llmProvider, setLlmProvider] = useState<string>("dashscope");
-  const [llmModel, setLlmModel] = useState<string>("qwen-plus");
+  const [llmModel, setLlmModel] = useState<string>("qwen-plus-latest");
   const [marketType, setMarketType] = useState<string>("美股");
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string>("");
+
+  // 根据市场类型动态设置 Ticker 输入模板（参考 CLI analyze）
+  const tickerConfig = useMemo(() => {
+    switch (marketType) {
+      case "A股":
+        return {
+          placeholder: "如: 600036 或 000001",
+          pattern: "^\\d{6}$",
+          title: "A股: 6位数字，例如 600036、000001",
+          inputMode: "numeric",
+          examples: "000001, 600036, 000858",
+        } as const;
+      case "港股":
+        return {
+          placeholder: "如: 0700.HK 或 09988.HK",
+          pattern: "^\\d{4,5}(\\.HK)?$",
+          title: "港股: 4-5位数字（可选 .HK 后缀），例如 0700.HK",
+          inputMode: "numeric",
+          examples: "0700.HK, 09988.HK, 03690.HK",
+        } as const;
+      default:
+        return {
+          placeholder: "如: AAPL 或 MSFT",
+          pattern: "^[A-Za-z]{1,5}$",
+          title: "美股: 1-5位字母，例如 AAPL、MSFT",
+          inputMode: "text",
+          examples: "AAPL, MSFT, NVDA",
+        } as const;
+    }
+  }, [marketType]);
+
+  // 根据 provider 联动模型选项
+  const modelOptions = useMemo(() => {
+    switch (llmProvider) {
+      case "dashscope":
+        return ["qwen-turbo", "qwen-plus-latest", "qwen-max"];
+      case "deepseek":
+        return ["deepseek-chat"];
+      case "openai":
+        return ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo", "gpt-4", "gpt-3.5-turbo"];
+      default:
+        return [] as string[];
+    }
+  }, [llmProvider]);
+
+  // provider变化或当前模型不在选项中时，自动纠正模型
+  useEffect(() => {
+    if (!modelOptions.length) return;
+    if (!modelOptions.includes(llmModel)) {
+      // 首选 qwen-plus-latest，如不存在则取第一个
+      const preferred = modelOptions.includes("qwen-plus-latest") ? "qwen-plus-latest" : modelOptions[0];
+      setLlmModel(preferred);
+    }
+  }, [llmProvider, modelOptions]);
 
   useEffect(() => {
     const fetchHello = async () => {
@@ -251,7 +309,7 @@ export default function Home() {
                     className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   >
                     <option value="美股">美股</option>
-                    <option value="中国">中国</option>
+                    <option value="A股">A股</option>
                     <option value="港股">港股</option>
                   </select>
                 </div>
@@ -262,10 +320,23 @@ export default function Home() {
                     type="text"
                     value={ticker}
                     onChange={(e) => setTicker(e.target.value)}
+                    onBlur={(e) => {
+                      const v = e.target.value.trim();
+                      // 统一大写（美股/港股的字母部分）
+                      if (marketType === "美股" || marketType === "港股") {
+                        setTicker(v.toUpperCase());
+                      }
+                    }}
                     className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                    placeholder="AAPL"
+                    placeholder={tickerConfig.placeholder}
+                    pattern={tickerConfig.pattern}
+                    title={tickerConfig.title}
+                    inputMode={tickerConfig.inputMode}
                     required
                   />
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    示例: {tickerConfig.examples}
+                  </div>
                 </div>
                 {/* 分析日期 */}
                 <div>
@@ -284,8 +355,15 @@ export default function Home() {
                   <input
                     type="number"
                     min={1}
+                    max={3}
+                    step={1}
                     value={researchDepth}
-                    onChange={(e) => setResearchDepth(parseInt(e.target.value || "1", 10))}
+                    onChange={(e) => {
+                      const v = parseInt(e.target.value || "1", 10);
+                      const clamped = Math.min(3, Math.max(1, isNaN(v) ? 1 : v));
+                      setResearchDepth(clamped);
+                    }}
+                    title="范围：1-3"
                     className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
                 </div>
@@ -300,25 +378,23 @@ export default function Home() {
                     <option value="dashscope">dashscope (阿里百炼)</option>
                     <option value="deepseek">deepseek</option>
                     <option value="openai">openai</option>
-                    <option value="ollama">ollama</option>
-                    <option value="anthropic">anthropic</option>
-                    <option value="google">google</option>
-                    <option value="custom_openai">custom_openai</option>
-                    <option value="openrouter">openrouter</option>
-                    <option value="siliconflow">siliconflow</option>
-                    <option value="qianfan">qianfan</option>
                   </select>
                 </div>
                 {/* LLM Model */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">LLM Model</label>
-                  <input
-                    type="text"
+                  <select
                     value={llmModel}
                     onChange={(e) => setLlmModel(e.target.value)}
                     className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                    placeholder="qwen-plus"
-                  />
+                  >
+                    {modelOptions.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    provider 切换时，模型列表将自动更新。
+                  </div>
                 </div>
               </div>
 
