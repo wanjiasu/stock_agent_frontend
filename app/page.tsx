@@ -8,6 +8,7 @@ import Link from "next/link";
 import Image from "next/image";
 import CardNav from "@/components/CardNav";
 import logo from "@/public/globe.svg";
+import { toast } from "sonner";
 
 export default function Home() {
   const router = useRouter();
@@ -169,7 +170,7 @@ export default function Home() {
     setWaitRange(range);
     try {
       const backendBase = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
-      const endpoint = backendBase ? `${backendBase}/analyze` : "/api/tradingagents/analyze";
+      const endpoint = backendBase ? `${backendBase}/analyze-and-email` : "/api/tradingagents/analyze-and-email";
 
       const payload = {
         ticker,
@@ -201,7 +202,15 @@ export default function Home() {
       localStorage.setItem("ta_last_request", JSON.stringify(payload));
       localStorage.setItem("ta_last_response", JSON.stringify(data));
       if (userEmail) localStorage.setItem("ta_notify_email", userEmail);
-      router.push("/report");
+
+      const taskId = data?.task_id as string | undefined;
+      const message = data?.message || "任务已进入队列，请稍后";
+      toast.success(message, { description: taskId ? `任务ID: ${taskId}` : undefined });
+      if (taskId) {
+        localStorage.setItem("ta_task_id", taskId);
+      }
+      // 不跳转到 /report（该端点返回队列任务，不包含报告数据）
+      // 用户可稍后访问 /report/task_id 来查看进度/结果
     } catch (err) {
       const msg = err instanceof Error ? err.message : "提交失败";
       setSubmitError(msg);
