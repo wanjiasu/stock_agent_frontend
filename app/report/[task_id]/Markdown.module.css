@@ -113,6 +113,32 @@
   border-color: rgba(255,255,255,0.15);
 }
 
+/* 媒体元素与细节增强 */
+.markdownBody img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 0.5rem 0;
+}
+.markdownBody li > p { margin: 0.25rem 0; }
+.markdownBody kbd {
+  background: rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 4px;
+  padding: 0 4px;
+  font-size: 0.85em;
+}
+:global(.dark) .markdownBody kbd {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.2);
+}
+.markdownBody input[type="checkbox"] { margin-right: 0.35rem; }
+.markdownBody a:hover { text-decoration-thickness: 2px; }
+
+/* 嵌套列表间距优化 */
+.markdownBody ul ul,
+.markdownBody ol ol { margin-top: 0.25rem; margin-bottom: 0.25rem; }
+
 /* 首尾去多余间距 */
 .markdownBody > :first-child { margin-top: 0; }
 .markdownBody > :last-child { margin-bottom: 0; }

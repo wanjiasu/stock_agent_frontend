@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useParams } from "next/navigation";
 import CardNav from "@/components/CardNav";
 import logo from "@/public/globe.svg";
 import ReactMarkdown from "react-markdown";
@@ -55,6 +56,37 @@ interface FormattedResults {
   metadata?: Record<string, unknown>;
 }
 
+// 新增：将后端 reports 的键规范化为前端 state 键
+function normalizeReportsToState(reports: Record<string, string>): ReportState {
+  const map: Record<string, string> = {
+    technical_report: "market_report",
+    market_report: "market_report",
+    fundamentals_report: "fundamentals_report",
+    market_sentiment_report: "sentiment_report",
+    sentiment_report: "sentiment_report",
+    news_report: "news_report",
+    news_analysis_report: "news_report",
+    risk_assessment_report: "risk_assessment",
+    risk_assessment: "risk_assessment",
+    investment_plan: "investment_plan",
+    investment_debate_state: "investment_debate_state",
+    trader_investment_plan: "trader_investment_plan",
+    risk_debate_state: "risk_debate_state",
+    final_trade_decision: "final_trade_decision",
+  };
+
+  const state: ReportState = {};
+  Object.entries(reports || {}).forEach(([k, v]) => {
+    const nk = map[k] || k; // 未知键保持原样，后续chips会过滤
+    // 仅接受字符串Markdown内容
+    if (typeof v === "string") {
+      // @ts-ignore
+      state[nk] = v;
+    }
+  });
+  return state;
+}
+
 const MODULE_META: Record<string, { label: string; icon: string }> = {
   market_report: { label: "市场技术分析", icon: "📈" },
   fundamentals_report: { label: "基本面分析", icon: "💰" },
@@ -71,25 +103,64 @@ const MODULE_META: Record<string, { label: string; icon: string }> = {
 export default function ReportPage() {
   const [data, setData] = useState<FormattedResults | null>(null);
   const [error, setError] = useState<string>("");
+  const params = useParams();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+  // 从后端按 task_id 获取报告数据
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("ta_last_response");
-      if (!raw) {
-        setError("没有找到报告数据，请先在首页提交分析。");
-        return;
-      }
-      const resp = JSON.parse(raw);
-      const formatted: FormattedResults | undefined = resp?.formatted_results;
-      if (!formatted) {
-        setError("分析已完成，但未返回格式化报告。请检查后端或网络配置。");
-        return;
-      }
-      setData(formatted);
-    } catch (e) {
-      setError("报告数据读取失败");
+    const task_id = (params?.task_id as string) || "";
+    if (!task_id) {
+      setError("缺少任务ID参数");
+      return;
     }
-  }, []);
+
+    const url = `${API_URL}/reports/by-task/${task_id}`;
+
+    (async () => {
+      try {
+        const res = await fetch(url, { cache: "no-store" });
+        if (!res.ok) {
+          const detail = await res.json().catch(() => ({} as any));
+          throw new Error(detail?.detail || `后端返回错误(${res.status})`);
+        }
+        const doc = await res.json();
+        const state = normalizeReportsToState(doc?.reports || {});
+
+        const formatted: FormattedResults = {
+          stock_symbol: doc?.stock_symbol || "",
+          analysis_date: doc?.analysis_date || "",
+          analysts: Array.isArray(doc?.analysts) ? doc.analysts : [],
+          research_depth: Number(doc?.research_depth ?? 0),
+          llm_provider: "n/a",
+          llm_model: "n/a",
+          decision: {},
+          state,
+          metadata: {
+            task_id: doc?.task_id,
+            analysis_id: doc?.analysis_id,
+            timestamp: doc?.timestamp,
+            status: doc?.status,
+            source: "fastapi-mongodb",
+          },
+        };
+
+        setData(formatted);
+        setError("");
+      } catch (e: any) {
+        console.error(e);
+        setError(e?.message || "报告数据读取失败");
+        // 兼容旧逻辑：如果后端失败，尝试本地缓存
+        try {
+          const raw = localStorage.getItem("ta_last_response");
+          if (raw) {
+            const resp = JSON.parse(raw);
+            const formatted: FormattedResults | undefined = resp?.formatted_results;
+            if (formatted) setData(formatted);
+          }
+        } catch (_) {}
+      }
+    })();
+  }, [params?.task_id]);
 
   const chips = useMemo(() => {
     if (!data) return [] as { key: string; label: string; icon: string }[];
@@ -127,6 +198,7 @@ export default function ReportPage() {
     }
   }, [data]);
 
+  // 渲染函数与UI结构保持不变
   const renderActiveContent = () => {
     if (!data) return null;
 
