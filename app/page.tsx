@@ -32,7 +32,6 @@ export default function Home() {
   const [marketType, setMarketType] = useState<string>("美股");
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string>("");
-  const [waitRange, setWaitRange] = useState<string>("");
 
   // 新增：邮箱弹窗与表单引用
   const [showEmailModal, setShowEmailModal] = useState<boolean>(false);
@@ -166,8 +165,6 @@ export default function Home() {
     e.preventDefault();
     setSubmitError("");
     setSubmitLoading(true);
-    const range = researchDepth === 1 ? "3-5min" : researchDepth === 2 ? "7-12min" : "12-15min";
-    setWaitRange(range);
     try {
       const backendBase = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
       const endpoint = backendBase ? `${backendBase}/analyze-and-email` : "/api/tradingagents/analyze-and-email";
@@ -216,7 +213,6 @@ export default function Home() {
       setSubmitError(msg);
     } finally {
       setSubmitLoading(false);
-      setWaitRange("");
     }
   };
 
@@ -456,7 +452,7 @@ export default function Home() {
                   type="button"
                   disabled={submitLoading}
                   onClick={() => setShowEmailModal(true)}
-                  className="rounded-full px-6 md:px-8 py-3 md:py-3.5 bg白 text-gray-900 shadow-sm ring-1 ring-black/5 hover:bg-white/90 disabled:opacity-60"
+                  className="rounded-full px-6 md:px-8 py-3 md:py-3.5 bg-white text-black shadow-sm ring-1 ring-black/5 hover:bg-white/90 disabled:opacity-60"
                 >
                   {submitLoading ? "提交中..." : "提交分析并查看报告"}
                 </button>
@@ -471,7 +467,7 @@ export default function Home() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4A4 4 0 004 12z"></path>
                     </svg>
-                    <span className="text-sm">请稍等（预计 {waitRange}）</span>
+                    <span className="text-sm">请稍等</span>
                   </div>
                 )}
               </div>
