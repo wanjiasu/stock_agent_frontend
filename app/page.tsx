@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Prism from "@/components/Prism";
@@ -32,6 +32,12 @@ export default function Home() {
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string>("");
   const [waitRange, setWaitRange] = useState<string>("");
+
+  // 新增：邮箱弹窗与表单引用
+  const [showEmailModal, setShowEmailModal] = useState<boolean>(false);
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [emailError, setEmailError] = useState<string>("");
+  const formRef = useRef<HTMLFormElement>(null);
 
   // 根据市场类型动态设置 Ticker 输入模板（参考 CLI analyze）
   const tickerConfig = useMemo(() => {
@@ -163,7 +169,6 @@ export default function Home() {
     setWaitRange(range);
     try {
       const backendBase = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
-      // If backend base is provided, match user's cURL path `/analyze`; fallback to same-origin router `/api/tradingagents/analyze`
       const endpoint = backendBase ? `${backendBase}/analyze` : "/api/tradingagents/analyze";
 
       const payload = {
@@ -174,6 +179,7 @@ export default function Home() {
         llm_provider: llmProvider,
         llm_model: llmModel,
         market_type: marketType,
+        notify_email: userEmail || undefined,
       };
 
       const res = await fetch(endpoint, {
@@ -192,9 +198,9 @@ export default function Home() {
       }
 
       const data = await res.json();
-      // Persist response for report page
       localStorage.setItem("ta_last_request", JSON.stringify(payload));
       localStorage.setItem("ta_last_response", JSON.stringify(data));
+      if (userEmail) localStorage.setItem("ta_notify_email", userEmail);
       router.push("/report");
     } catch (err) {
       const msg = err instanceof Error ? err.message : "提交失败";
@@ -203,6 +209,20 @@ export default function Home() {
       setSubmitLoading(false);
       setWaitRange("");
     }
+  };
+
+  // 新增：邮箱弹窗提交处理
+  const handleEmailSubmit = () => {
+    setEmailError("");
+    const email = userEmail.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      setEmailError("请输入有效邮箱，例如 you@example.com");
+      return;
+    }
+    // 关闭弹窗并触发表单提交
+    setShowEmailModal(false);
+    formRef.current?.requestSubmit();
   };
 
   return (
@@ -288,7 +308,7 @@ export default function Home() {
           {/* 新：交易分析表单 */}
           <div className="rounded-2xl p-6 md:p-7 bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-200/70 dark:border-gray-700/60 shadow-sm">
             <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">交易分析</h2>
-            <form onSubmit={submitAnalysis} className="space-y-4">
+            <form ref={formRef} onSubmit={submitAnalysis} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* 市场类型 */}
                 <div>
@@ -424,9 +444,10 @@ export default function Home() {
 
               <div className="flex items-center gap-3">
                 <button
-                  type="submit"
+                  type="button"
                   disabled={submitLoading}
-                  className="rounded-full px-6 md:px-8 py-3 md:py-3.5 bg-white text-gray-900 shadow-sm ring-1 ring-black/5 hover:bg-white/90 disabled:opacity-60"
+                  onClick={() => setShowEmailModal(true)}
+                  className="rounded-full px-6 md:px-8 py-3 md:py-3.5 bg白 text-gray-900 shadow-sm ring-1 ring-black/5 hover:bg-white/90 disabled:opacity-60"
                 >
                   {submitLoading ? "提交中..." : "提交分析并查看报告"}
                 </button>
@@ -449,6 +470,46 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* 新增：邮箱弹窗 */}
+      {showEmailModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-lg border border-gray-200/70 dark:border-gray-700/60">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">留下邮箱以便提醒</h3>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+              生成报告预计需要 10–30 分钟。为了便于我们在结果就绪后及时通知你，请留下你的邮箱。我们仅用于通知，不会泄露或用于其他用途。
+            </p>
+            <div className="mt-4">
+              <input
+                type="email"
+                value={userEmail}
+                onChange={(e) => setUserEmail(e.target.value)}
+                placeholder="例如：you@example.com"
+                className="w-full rounded-full border border-gray-300/70 dark:border-gray-600/60 px-4 py-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500"
+              />
+              {emailError && (
+                <div className="mt-2 text-xs text-red-600 dark:text-red-400">{emailError}</div>
+              )}
+            </div>
+            <div className="mt-6 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setShowEmailModal(false)}
+                className="rounded-full px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 ring-1 ring-black/5 hover:bg-gray-200/80"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={handleEmailSubmit}
+                className="rounded-full px-5 py-2.5 bg-black text-white dark:bg-white dark:text-black shadow-sm ring-1 ring-black/5 hover:opacity-90"
+              >
+                提交
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
