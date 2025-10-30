@@ -83,6 +83,19 @@ export default function Home() {
     }
   }, [llmProvider]);
 
+  // 研究深度选项与描述
+  const researchDepthOptions = useMemo(
+    () => [
+      { value: 1, label: "浅层", desc: "快速研究，少量辩论和策略讨论" },
+      { value: 2, label: "中等", desc: "中等程度，适度的辩论和策略讨论" },
+      { value: 3, label: "深度", desc: "全面研究，深入的辩论和策略讨论" },
+    ],
+    []
+  );
+  const selectedDepthText = useMemo(() => {
+    const opt = researchDepthOptions.find((o) => o.value === researchDepth);
+    return opt ? `${opt.label} - ${opt.desc}` : "";
+  }, [researchDepth, researchDepthOptions]);
   // provider 变化时，根据映射重置为该 provider 的默认模型（若默认不存在则取第一个）
   useEffect(() => {
     if (!modelOptions.length) return;
@@ -371,20 +384,25 @@ export default function Home() {
                 {/* 研究深度 */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">研究深度</label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={3}
-                    step={1}
-                    value={researchDepth}
-                    onChange={(e) => {
-                      const v = parseInt(e.target.value || "1", 10);
-                      const clamped = Math.min(3, Math.max(1, isNaN(v) ? 1 : v));
-                      setResearchDepth(clamped);
-                    }}
-                    title="范围：1-3"
-                    className="mt-1 w-full rounded-full border border-gray-300/70 dark:border-gray-600/60 px-4 py-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500"
-                  />
+                  <div className="mt-2 flex flex-wrap gap-3">
+                    {researchDepthOptions.map((opt) => (
+                      <label
+                        key={opt.value}
+                        className="inline-flex items-center gap-2 rounded-full border border-gray-300/70 dark:border-gray-600/60 px-3 py-1 text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
+                      >
+                        <input
+                          type="radio"
+                          name="researchDepth"
+                          checked={researchDepth === opt.value}
+                          onChange={() => setResearchDepth(opt.value)}
+                        />
+                        <span>{opt.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-2" aria-live="polite">
+                    {selectedDepthText}
+                  </div>
                 </div>
                 {/* LLM Provider */}
                 <div>
