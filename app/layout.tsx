@@ -18,6 +18,18 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "多团队协作，一次生成可执行交易方案",
   description: "多团队协作，一次生成可执行交易方案",
+  keywords: [
+    "股票分析",
+    "智能交易方案",
+    "团队协作",
+    "Redspark",
+    "自动化交易",
+    "美股分析",
+    "A股分析",
+    "港股",
+    "量化投资",
+    "股票助手",
+  ],
 };
 
 export default function RootLayout({
