@@ -236,7 +236,7 @@ export default function Home() {
       <CardNav
         logo={logo}
         logoAlt="TradingAgents"
-        appName="TradingAgents"
+        appName="RedSparkTrade"
         topLinks={[
           { label: "Home", href: "/" },
           { label: "Blog", href: "/blog" },
@@ -302,10 +302,10 @@ export default function Home() {
           {/* slogan和描述展示区块 */}
           <div className="text-center py-8">
             <h1 className="mt-6 text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
-              多团队协作，一次生成可执行交易方案
+              Redspark股票分析助手｜智能多团队协作｜可执行交易方案
             </h1>
             <p className="mt-3 text-sm md:text-base text-gray-600 dark:text-gray-300">
-              集成研究、风险与交易计划，统一 Markdown 报告，随时复盘
+              Redspark为投资者和分析师提供多团队协作、集成研究、风险管控和自动化交易计划，助你高效生成可执行股票策略，支持美股、A股、港股等多市场。
             </p>
           </div>
           
