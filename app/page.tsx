@@ -7,7 +7,7 @@ import Prism from "@/components/Prism";
 import Link from "next/link";
 import Image from "next/image";
 import CardNav from "@/components/CardNav";
-import logo from "@/public/globe.svg";
+import logo from "@/public/icon.svg";
 import { toast } from "sonner";
 
 export default function Home() {
@@ -248,7 +248,7 @@ export default function Home() {
       {/* 顶部 CardNav（替换原固定导航） */}
       <CardNav
         logo={logo}
-        logoAlt="TradingAgents"
+        logoAlt="RedSparkTrade"
         appName="RedSparkTrade"
         topLinks={[
           { label: "Home", href: "/" },

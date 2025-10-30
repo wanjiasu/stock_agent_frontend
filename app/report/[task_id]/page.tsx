@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import CardNav from "@/components/CardNav";
-import logo from "@/public/globe.svg";
+import logo from "@/public/icon.svg";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import styles from "./Markdown.module.css";
@@ -341,8 +341,8 @@ export default function ReportPage() {
     >
       <CardNav
         logo={logo}
-        logoAlt="TradingAgents"
-        appName="TradingAgents"
+        logoAlt="RedSparkTrade"
+        appName="RedSparkTrade"
         topLinks={[
           { label: "Home", href: "/" },
           { label: "Blog", href: "/blog" },

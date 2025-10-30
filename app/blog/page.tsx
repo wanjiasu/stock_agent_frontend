@@ -1,6 +1,6 @@
 import Link from "next/link";
 import CardNav from "@/components/CardNav";
-import logo from "@/public/globe.svg";
+import logo from "@/public/icon.svg";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import type { SanityImageSource } from "@sanity/image-url/lib/types/types";

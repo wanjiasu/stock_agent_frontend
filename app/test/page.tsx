@@ -1,5 +1,5 @@
 import CardNav from '@/components/CardNav'
-import logo from '@/public/globe.svg';
+import logo from '@/public/icon.svg';
 
 const App = () => {
   const items = [
@@ -36,7 +36,7 @@ const App = () => {
   return (
     <CardNav
       logo={logo}
-      logoAlt="Company Logo"
+      logoAlt="RedSparkTrade"
       items={items}
       baseColor="#fff"
       menuColor="#000"

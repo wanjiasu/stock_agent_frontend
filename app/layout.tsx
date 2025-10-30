@@ -30,6 +30,11 @@ export const metadata: Metadata = {
     "量化投资",
     "股票助手",
   ],
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
