@@ -1,6 +1,6 @@
 .card-nav-container {
   position: absolute;
-  top: 2em;
+  top: calc(2em + env(safe-area-inset-top));
   left: 50%;
   transform: translateX(-50%);
   width: 92%;
@@ -215,7 +215,7 @@
 @media (max-width: 768px) {
   .card-nav-container {
     width: 90%;
-    top: 1.2em;
+    top: calc(1.2em + env(safe-area-inset-top));
   }
 
   .card-nav-top {

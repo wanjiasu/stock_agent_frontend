@@ -62,7 +62,7 @@ export default async function BlogDetailPage(
     >
       <SiteNav />
 
-      <div className="relative z-10 mx-auto max-w-4xl px-6 py-10 pt-32">
+      <div className="relative z-10 mx-auto max-w-4xl px-6 py-10 pt-24 md:pt-32">
         <div className="rounded-2xl bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-200/70 dark:border-gray-700/60 shadow-sm p-6 md:p-8">
           <Link href="/blog" className="text-sm text-gray-600 dark:text-gray-300 hover:underline">← 返回列表</Link>
           <h1 className="mt-2 text-2xl font-semibold text-gray-900 dark:text-gray-100">{data.title}</h1>
@@ -80,7 +80,7 @@ export default async function BlogDetailPage(
             </div>
           ) : null}
 
-          {imgUrl && <img src={imgUrl} alt={data.title} className="mt-6 w-full h-72 object-cover rounded-lg" />}
+          {imgUrl && <img src={imgUrl} alt={data.title} loading="lazy" decoding="async" className="mt-6 w-full h-72 object-cover rounded-lg" />}
 
           <article className="mt-6 prose dark:prose-invert max-w-none">
             {/* 将 Portable Text 简单转换为纯文本进行展示 */}

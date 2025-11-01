@@ -341,7 +341,7 @@ export default function ReportPage() {
       <SiteNav />
 
 
-      <div className="relative z-10 flex flex-col items-center justify-center p-8 min-h-screen pt-32">
+      <div className="relative z-10 flex flex-col items-center justify-center p-8 min-h-screen pt-24 md:pt-32">
         <div className="max-w-4xl w-full space-y-6">
           {error && (
             <div className="text-red-600 bg-red-50 p-3 rounded">{error}</div>

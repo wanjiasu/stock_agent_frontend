@@ -42,7 +42,7 @@ export default async function BlogIndexPage() {
     >
       <SiteNav />
 
-      <div className="relative z-10 mx-auto max-w-5xl px-6 py-10 pt-32">
+      <div className="relative z-10 mx-auto max-w-5xl px-6 py-10 pt-24 md:pt-32">
         <div className="rounded-2xl bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-200/70 dark:border-gray-700/60 shadow-sm p-6 md:p-8">
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Blog</h1>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">最新文章列表</p>
@@ -57,7 +57,7 @@ export default async function BlogIndexPage() {
                   <article className="rounded-xl border border-gray-200/70 dark:border-gray-700/60 bg-white/70 dark:bg-gray-800/60 backdrop-blur-sm p-4 hover:bg-white/80 hover:dark:bg-gray-800/70 transition-colors">
                     {imgUrl && (
                       // 使用原生 img，避免 next/image 的远程域配置
-                      <img src={imgUrl} alt={post.title} className="mb-4 w-full h-56 object-cover rounded-lg" />
+                      <img src={imgUrl} alt={post.title} loading="lazy" decoding="async" className="mb-4 w-full h-56 object-cover rounded-lg" />
                     )}
                     <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 group-hover:underline">{post.title}</h2>
                     <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">

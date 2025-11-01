@@ -263,7 +263,7 @@ export default function Home() {
       </div>
 
       {/* 前景内容层 */}
-      <div className="relative z-10 flex flex-col items-center justify-center p-8 min-h-screen pt-32">
+      <div className="relative z-10 flex flex-col items-center justify-center p-8 min-h-screen pt-24 md:pt-32">
         <div className="max-w-2xl w-full space-y-6">
           {/* slogan和描述展示区块 */}
           <div className="text-center py-8">
