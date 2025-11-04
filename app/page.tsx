@@ -524,14 +524,32 @@ export default function Home() {
               >
                 知道了
               </button>
-              {successTaskId && (
-                <Link
-                  href={`/report/${successTaskId}`}
-                  className="rounded-full px-5 py-2.5 bg-black text-white dark:bg-white dark:text-black shadow-sm ring-1 ring-black/5 hover:opacity-90"
-                >
-                  查看报告进度
-                </Link>
-              )}
+            </div>
+            <div className="mt-5 rounded-xl bg-gray-50 dark:bg-gray-900/30 p-4 border border-gray-200/70 dark:border-gray-700/60">
+              <div className="text-sm text-gray-700 dark:text-gray-300">
+                📣 关注 Telegram 机器人，实时查询 Reporter 进度与接收报告提醒
+              </div>
+              <div className="mt-3 flex items-center gap-4">
+                <Image
+                  src="/QRcode.png"
+                  alt="Telegram 机器人二维码"
+                  width={120}
+                  height={120}
+                  className="rounded-md border border-gray-200/60 dark:border-gray-700/60"
+                />
+                <div className="flex-1">
+                  <a
+                    href="https://t.me/RedSparkTrade_bot"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-3 rounded-full px-5 py-3 bg-black text-white dark:bg-white dark:text-black shadow-md ring-1 ring-black/10 hover:opacity-90 transition-opacity flex-nowrap"
+                  >
+                    <span className="whitespace-nowrap font-medium">👉 添加 Telegram Bot</span>
+                    
+                  </a>
+                  <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">💡 点击按钮或扫码添加，随时查询报告进度</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
