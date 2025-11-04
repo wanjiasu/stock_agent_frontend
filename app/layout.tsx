@@ -4,6 +4,7 @@ import "./globals.css";
 import ToasterProvider from "../components/toaster-provider";
 import Footer from "@/components/SiteFooter";
 import Script from "next/script";
+import SupportWidget from "@/components/SupportWidget";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -83,6 +84,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         {/* 将页脚统一渲染在所有页面底部 */}
         <Footer />
         <ToasterProvider />
+        <SupportWidget />
       </body>
     </html>
   );
