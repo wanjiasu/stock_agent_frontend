@@ -7,7 +7,7 @@ import Prism from "@/components/Prism";
 import Link from "next/link";
 import Image from "next/image";
 import SiteNav from "@/components/SiteNav";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 
 export default function Home() {
   const router = useRouter();
@@ -37,6 +37,11 @@ export default function Home() {
   const [userEmail, setUserEmail] = useState<string>("");
   const [emailError, setEmailError] = useState<string>("");
   const formRef = useRef<HTMLFormElement>(null);
+
+  // 新增：任务成功弹窗状态
+  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+  const [successTaskId, setSuccessTaskId] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string>("任务已进入队列，请稍后");
 
   // 根据市场类型动态设置 Ticker 输入模板（参考 CLI analyze）
   const tickerConfig = useMemo(() => {
@@ -212,9 +217,10 @@ export default function Home() {
       localStorage.setItem("ta_last_response", JSON.stringify(data));
       if (userEmail) localStorage.setItem("ta_notify_email", userEmail);
 
-      const taskId = data?.task_id as string | undefined;
-      const message = data?.message || "任务已进入队列，请稍后";
-      toast.success(message, { description: taskId ? `任务ID: ${taskId}` : undefined });
+      const taskId = (data?.task_id as string | undefined) ?? null;
+      setSuccessTaskId(taskId);
+      setSuccessMessage(data?.message || "任务已进入队列，请稍后");
+      setShowSuccessModal(true);
       if (taskId) {
         localStorage.setItem("ta_task_id", taskId);
       }
@@ -482,6 +488,50 @@ export default function Home() {
               >
                 提交
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 新增：任务创建成功弹窗 */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-lg border border-gray-200/70 dark:border-gray-700/60">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">任务创建成功</h3>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{successMessage}</p>
+            {successTaskId && (
+              <div className="mt-4 rounded-lg bg-gray-50 dark:bg-gray-900/30 p-3 border border-gray-200/70 dark:border-gray-700/60">
+                <div className="text-xs text-gray-500 dark:text-gray-400">任务ID</div>
+                <div className="mt-1 flex items-center justify-between">
+                  <code className="text-sm text-gray-800 dark:text-gray-200">{successTaskId}</code>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (successTaskId) navigator.clipboard.writeText(successTaskId);
+                    }}
+                    className="ml-3 rounded-full px-3 py-1.5 bg-black text-white dark:bg-white dark:text-black text-sm ring-1 ring-black/5 hover:opacity-90"
+                  >
+                    复制
+                  </button>
+                </div>
+              </div>
+            )}
+            <div className="mt-6 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setShowSuccessModal(false)}
+                className="rounded-full px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 ring-1 ring-black/5 hover:bg-gray-200/80"
+              >
+                知道了
+              </button>
+              {successTaskId && (
+                <Link
+                  href={`/report/${successTaskId}`}
+                  className="rounded-full px-5 py-2.5 bg-black text-white dark:bg-white dark:text-black shadow-sm ring-1 ring-black/5 hover:opacity-90"
+                >
+                  查看报告进度
+                </Link>
+              )}
             </div>
           </div>
         </div>

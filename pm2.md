@@ -35,9 +35,7 @@ pip install -r requirements.txt
 
 ```bash
 cd /Users/kuriball/Documents/MyProjects/bc_agent_app/backend
-pm2 start ".venv/bin/uvicorn api.server:app --host 0.0.0.0 --port 8001" \
-  --name stock_agent_backend \
-  --cwd /Users/kuriball/Documents/MyProjects/bc_agent_app/backend
+pm2 delete stock_agent_backend ; pm2 start .venv/bin/python --name stock_agent_backend -- -m uvicorn api.server:app --host 0.0.0.0 --port 8001 && pm2 save
 ```
 
 3) 管理与查看：
