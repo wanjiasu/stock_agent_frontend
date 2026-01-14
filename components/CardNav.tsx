@@ -1,5 +1,5 @@
 'use client'
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ArrowUpRight } from 'lucide-react';
 import styles from './CardNav.module.css';
@@ -74,7 +74,7 @@ const CardNav: React.FC<CardNavProps> = ({
         contentEl.style.position = 'static';
         contentEl.style.height = 'auto';
 
-        contentEl.offsetHeight;
+        contentEl.getBoundingClientRect();
 
         const topBar = 60;
         const padding = 16;
@@ -91,7 +91,7 @@ const CardNav: React.FC<CardNavProps> = ({
     return 260;
   };
 
-  const createTimeline = () => {
+  const createTimeline = useCallback(() => {
     const navEl = navRef.current;
     if (!navEl) return null;
 
@@ -109,7 +109,7 @@ const CardNav: React.FC<CardNavProps> = ({
     tl.to(cardsRef.current, { y: 0, opacity: 1, duration: 0.4, ease, stagger: 0.08 }, '-=0.1');
 
     return tl;
-  };
+  }, [ease]);
 
   useLayoutEffect(() => {
     const tl = createTimeline();
@@ -119,7 +119,7 @@ const CardNav: React.FC<CardNavProps> = ({
       tl?.kill();
       tlRef.current = null;
     };
-  }, [ease, items]);
+  }, [ease, items, createTimeline]);
 
   useLayoutEffect(() => {
     const handleResize = () => {
@@ -146,7 +146,7 @@ const CardNav: React.FC<CardNavProps> = ({
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [isExpanded]);
+  }, [isExpanded, createTimeline]);
 
   const toggleMenu = () => {
     const tl = tlRef.current;

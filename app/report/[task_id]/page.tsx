@@ -79,8 +79,7 @@ function normalizeReportsToState(reports: Record<string, string>): ReportState {
     const nk = map[k] || k; // 未知键保持原样，后续chips会过滤
     // 仅接受字符串Markdown内容
     if (typeof v === "string") {
-      // @ts-ignore
-      state[nk] = v;
+      (state as Record<string, unknown>)[nk] = v;
     }
   });
   return state;
@@ -119,7 +118,7 @@ export default function ReportPage() {
       try {
         const res = await fetch(url, { cache: "no-store" });
         if (!res.ok) {
-          const detail = await res.json().catch(() => ({} as any));
+          const detail = (await res.json().catch(() => ({}))) as { detail?: string };
           throw new Error(detail?.detail || `后端返回错误(${res.status})`);
         }
         const doc = await res.json();
@@ -145,9 +144,10 @@ export default function ReportPage() {
 
         setData(formatted);
         setError("");
-      } catch (e: any) {
+      } catch (e: unknown) {
         console.error(e);
-        setError(e?.message || "报告数据读取失败");
+        const msg = e instanceof Error ? e.message : "报告数据读取失败";
+        setError(msg);
         // 兼容旧逻辑：如果后端失败，尝试本地缓存
         try {
           const raw = localStorage.getItem("ta_last_response");
@@ -156,10 +156,10 @@ export default function ReportPage() {
             const formatted: FormattedResults | undefined = resp?.formatted_results;
             if (formatted) setData(formatted);
           }
-        } catch (_) {}
+        } catch {}
       }
     })();
-  }, [params?.task_id]);
+  }, [params?.task_id, API_URL]);
 
   const chips = useMemo(() => {
     if (!data) return [] as { key: string; label: string; icon: string }[];
@@ -195,7 +195,7 @@ export default function ReportPage() {
     if (!available.includes(activeKey)) {
       setActiveKey(available.includes("risk_debate_state") ? "risk_debate_state" : available[0]);
     }
-  }, [data]);
+  }, [data, activeKey]);
 
   // 渲染函数与UI结构保持不变
   const renderActiveContent = () => {

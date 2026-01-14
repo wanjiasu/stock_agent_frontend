@@ -80,7 +80,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
         {children}
         {/* 全局页脚 */}
-        {/* eslint-disable-next-line @next/next/no-css-tags */}
         {/* 将页脚统一渲染在所有页面底部 */}
         <Footer />
         <ToasterProvider />
