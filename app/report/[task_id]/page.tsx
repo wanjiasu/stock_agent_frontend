@@ -369,35 +369,6 @@ export default function ReportPage() {
                 </div>
               </div>
 
-              {/* 主报告头部与要点 */}
-              <div className="rounded-2xl p-6 md:p-7 bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-200/70 dark:border-gray-700/60 shadow-sm">
-                <h2 className="text-xl font-semibold mb-1">交易分析报告：{data.stock_symbol}</h2>
-                <p className="text-sm text-gray-600 dark:text-gray-300">分析日期：{data.analysis_date}</p>
-                <div className="mt-4 text-sm space-y-2">
-                  <div>
-                    1. 投资建议：<span className="font-medium">{data.decision?.action}</span>
-                    {data.decision?.action && (
-                      <span className="text-gray-500 ml-1">({englishAction(data.decision.action)})</span>
-                    )}
-                  </div>
-                  <div>
-                    2. 目标价位：<span className="font-medium">{data.decision?.target_price != null ? `¥${data.decision.target_price}` : "暂无"}</span>
-                  </div>
-                  <div>
-                    3. 置信度：<span className="font-medium">{data.decision?.confidence != null ? data.decision.confidence : "未知"}</span>
-                  </div>
-                  {data.decision?.reasoning && (
-                    <div className="pt-2 text-gray-700 dark:text-gray-300">
-                      <div className={styles.markdownBody}>
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {toMd(data.decision.reasoning)}
-                        </ReactMarkdown>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
               {/* 模块标签（点击切换下方模块内容） */}
               {chips.length > 0 && (
                 <div className="rounded-2xl px-4 py-3 md:px-5 md:py-4 bg-white/70 dark:bg-gray-800/60 backdrop-blur-sm border border-gray-200/70 dark:border-gray-700/60 shadow-sm">
